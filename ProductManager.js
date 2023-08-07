@@ -1,14 +1,27 @@
-class ProductManager {
-    #products
+const fs = require('fs')
 
-    constructor () {
-        this.#products = []
+class ProductManager {
+    #path
+
+    constructor (path) {
+        this.#path = path
+        this.#init()
+    }
+
+    async #init() {
+        if (!fs.existsSync(this.#path)) {
+            await fs.promisses.writeFile(this.#path, JSON.stringify([],))
+        }
     }
 
     addProduct(product) {
 
-        if (!product.title || !product.description || !product.price || !product.thumbnail || !product.code || !product.stock){
-            return 'Todos los campos son obligatorios.'
+        const requiredFields = ["title", "description", "price", "thumbnail", "code", "stock"];
+
+        const allFieldsPresent = requiredFields.every((field) => product[field]);
+
+        if (!allFieldsPresent){
+            return 'Todos los campos son obligatorios'
         }
 
         const found = this.#products.find(item => item.code === product.code)
