@@ -10,7 +10,7 @@ class ProductManager {
 
     async #init() {
         if (!fs.existsSync(this.#path)) {
-            await fs.promisses.writeFile(this.#path, JSON.stringify([],))
+            await fs.promises.writeFile(this.#path, JSON.stringify([], null, 2))
         }
     }
 
@@ -28,14 +28,14 @@ class ProductManager {
 
         let products = JSON.parse(data)
 
-        const found = this.#products.find(item => item.code === product.code)
+        const found = products.find(item => item.code === product.code)
 
         if (found) {
             return 'El código ya existe.'
         }
 
-        const productToAdd = {id: this.#generateId(), ...product}
-        this.#products.push(productToAdd)
+        const productToAdd = {id: this.#generateId(products), ...product}
+        products.push(productToAdd)
 
         await fs.promises.writeFile(this.#path, JSON.stringify(products, null, 2))
 
@@ -43,11 +43,11 @@ class ProductManager {
 
     }
 
-    #generateId() {
-        if (this.#products.length === 0) {
+    #generateId(products) {
+        if (products.length === 0) {
             return 1 
         }
-        return this.#products[this.#products.length-1].id + 1
+        return products[products.length-1].id + 1
     }
 
     async getProducts() {
@@ -67,11 +67,11 @@ class ProductManager {
             return 'El archivo no existe en la base de datos.'
         }
 
-        let product = products.find(item => item.id === id)
-
         let data = await fs.promises.readFile(this.#path, 'utf-8')
 
         let products = JSON.parse(data)
+
+        let product = products.find(item => item.id === id)
 
         if (!product) {
             return 'Id no encontrado.'
@@ -105,7 +105,7 @@ class ProductManager {
         })
 
         if (!isFound) {
-            return 'El rpducto no existe.'
+            return 'El producto no existe.'
         }
 
         await fs.promises.writeFile(this.#path, JSON.stringify(newProducts, null, 2))
@@ -131,7 +131,7 @@ class ProductManager {
         }
 
         if (!isFound) {
-            return 'El rpducto no existe.'
+            return 'El producto no existe.'
         }
 
         await fs.promises.writeFile(this.#path, JSON.stringify(newProducts, null, 2))
